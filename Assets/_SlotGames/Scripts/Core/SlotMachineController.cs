@@ -2,25 +2,34 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using SlotGame.Data;
+using SlotGame.View;
 
 namespace SlotGame.Core
 {
     public class SlotMachineController : MonoBehaviour
     {
         [Header("References")]
-        [SerializeField] private SlotReel[] reels;
+        [SerializeField] private SlotReel[] SlotReels;
         [SerializeField] private SlotDatabaseSO database;
         [SerializeField] private PayoutManager payoutManager;
         [SerializeField] private SlotSettingsSO settings;
+        [SerializeField] private UIManager uiManager;
+
+        public System.Action OnSpinStarted;
+        public System.Action OnSpinStopping;
 
         private bool isSpinning = false;
 
         public void Spin()
         {
             if (isSpinning) return;
+
+            if (uiManager != null) uiManager.ClearWinText();
+
             if (payoutManager != null && !payoutManager.CanAffordSpin())
             {
                 Debug.LogWarning("Insufficient balance!");
+                OnSpinStopping?.Invoke();
                 return;
             }
 
@@ -30,11 +39,13 @@ namespace SlotGame.Core
         private IEnumerator SpinRoutine()
         {
             isSpinning = true;
+            OnSpinStarted?.Invoke();
+
             if (payoutManager != null) payoutManager.DeductSpinCost();
 
             // 1. Generate RNG Results
             List<SlotSymbolSO> results = new List<SlotSymbolSO>();
-            for (int i = 0; i < reels.Length; i++)
+            for (int i = 0; i < SlotReels.Length; i++)
             {
                 results.Add(database.GetRandomSymbol());
             }
@@ -46,8 +57,8 @@ namespace SlotGame.Core
                 potentialWin = payoutManager.CalculatePotentialWin(results);
             }
 
-            // 3. Start reels & Wait for duration
-            foreach (var reel in reels)
+            // 3. Start Slot reels & Wait for duration
+            foreach (var reel in SlotReels)
             {
                 float speed = settings != null ? settings.spinSpeed : 1500f;
                 reel.StartSpin(speed);
@@ -56,19 +67,18 @@ namespace SlotGame.Core
 
             if (settings != null) yield return new WaitForSeconds(settings.spinDuration);
 
-            // 4. Stop reels
-            for (int i = 0; i < reels.Length; i++)
+            for (int i = 0; i < SlotReels.Length; i++)
             {
-                reels[i].StopSpin(results[i]);
+                SlotReels[i].StopSpin(results[i]);
                 if (settings != null) yield return new WaitForSeconds(settings.delayBetweenReels);
             }
 
-            // 5. Wait for all reels to physically finish snapping
+            // 4. Wait for all Slot reels to physically finish snapping
             bool anyReelSpinning = true;
             while (anyReelSpinning)
             {
                 anyReelSpinning = false;
-                foreach (var reel in reels)
+                foreach (var reel in SlotReels)
                 {
                     if (reel.IsSpinning)
                     {
@@ -79,7 +89,7 @@ namespace SlotGame.Core
                 yield return null;
             }
 
-            // 6. Finalize payout
+            // 5. Finalize payout
             if (potentialWin > 0)
             {
                 payoutManager.AddWinToBalance(potentialWin);
@@ -87,6 +97,9 @@ namespace SlotGame.Core
             }
 
             isSpinning = false;
+
+            // 6. All Slots stopped
+            OnSpinStopping?.Invoke();
         }
     }
 }

@@ -9,37 +9,72 @@ namespace SlotGame.Core
         [SerializeField] private SlotSettingsSO settings;
 
         public int CurrentBalance { get; private set; }
+        public int CurrentBet { get; private set; }
+
+        public System.Action<int> OnBalanceChanged;
+        public System.Action<int> OnWinDetected;
+        public System.Action<int> OnBetChanged;
+
+        private readonly int[] betTiers = { 10, 50, 100, 200 };
+        private int currentBetIndex = 0;
 
         private void Awake() 
         {
-            if (settings != null) CurrentBalance = settings.initialBalance;
+            if (settings != null)
+            {
+                CurrentBalance = settings.initialBalance;
+            }
+            CurrentBet = betTiers[currentBetIndex];
         }
 
-        public bool CanAffordSpin() => settings != null ? CurrentBalance >= settings.costPerSpin : true;
+        private void Start()
+        {
+            OnBalanceChanged?.Invoke(CurrentBalance);
+            OnBetChanged?.Invoke(CurrentBet);
+        }
+
+        public void IncreaseBet()
+        {
+            if (currentBetIndex < betTiers.Length - 1)
+            {
+                currentBetIndex++;
+                CurrentBet = betTiers[currentBetIndex];
+                OnBetChanged?.Invoke(CurrentBet);
+            }
+        }
+
+        public void DecreaseBet()
+        {
+            if (currentBetIndex > 0)
+            {
+                currentBetIndex--;
+                CurrentBet = betTiers[currentBetIndex];
+                OnBetChanged?.Invoke(CurrentBet);
+            }
+        }
+
+        public bool CanAffordSpin() => CurrentBalance >= CurrentBet;
 
         public void DeductSpinCost()
         {
-            if (settings != null)
-            {
-                CurrentBalance -= settings.costPerSpin;
-                Debug.Log($"Spin Cost Deducted. Balance: {CurrentBalance}");
-            }
+            CurrentBalance -= CurrentBet;
+            OnBalanceChanged?.Invoke(CurrentBalance);
+            Debug.Log($"Spin Cost Deducted. Balance: {CurrentBalance}");
         }
 
         public int CalculatePotentialWin(List<SlotSymbolSO> results)
         {
             if (results == null || results.Count < 3) return 0;
 
-            // DEBUG LOGS to see what is happening
-            Debug.Log($"Checking Payout: R1:{results[0].symbolName}(ID:{results[0].symbolID}) | " +
-                      $"R2:{results[1].symbolName}(ID:{results[1].symbolID}) | " +
-                      $"R3:{results[2].symbolName}(ID:{results[2].symbolID})");
-
-            // Assignment Rule: All 3 reels must match
             if (results[0].symbolID == results[1].symbolID && results[1].symbolID == results[2].symbolID)
             {
+                // Win scales based on your bet! (Divided by 10 so a 10 bet gives 1x base value)
+                int betMultiplier = CurrentBet / 10; 
                 int multiplier = settings != null ? settings.jackpotMultiplier : 10;
-                return results[0].basePayoutValue * multiplier;
+                
+                int win = results[0].basePayoutValue * multiplier * betMultiplier;
+                OnWinDetected?.Invoke(win);
+                return win;
             }
             return 0;
         }
@@ -47,6 +82,7 @@ namespace SlotGame.Core
         public void AddWinToBalance(int amount)
         {
             CurrentBalance += amount;
+            OnBalanceChanged?.Invoke(CurrentBalance);
             Debug.Log($"<color=green>Credits Added: {amount}. New Balance: {CurrentBalance}</color>");
         }
     }
