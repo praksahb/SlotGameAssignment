@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ec8ca25a501aa3458498adb5907a789, type: 3}
+  m_Name: Symbol_3Bar
+  m_EditorClassIdentifier: 
+  symbolName: 3Bar
+  symbolSprite: {fileID: 21300000, guid: ec19e75ff2f25e344932297262e571dc, type: 3}
+  symbolID: 3
+  basePayoutValue: 30
