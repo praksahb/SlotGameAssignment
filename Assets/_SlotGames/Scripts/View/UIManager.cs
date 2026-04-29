@@ -5,18 +5,24 @@ using SlotGame.Core;
 
 namespace SlotGame.View
 {
+    /// <summary>
+    /// Manages all UI displays including balance, current bet, and win notifications.
+    /// </summary>
     public class UIManager : MonoBehaviour
     {
-        [Header("References")]
+        [Header("Engine References")]
+        [SerializeField] private SlotMachineController controller;
         [SerializeField] private PayoutManager payoutManager;
 
-        [Header("UI Elements")]
+        [Header("UI Text Elements")]
         [SerializeField] private TextMeshProUGUI balanceText;
         [SerializeField] private TextMeshProUGUI winAmountText;
-        [SerializeField] private TextMeshProUGUI betText; // New text for current bet
+        [SerializeField] private TextMeshProUGUI betText; 
+        
+        [Header("Win Display Settings")]
         [SerializeField] private GameObject winNotificationPanel;
-        [SerializeField] private float winDisplayDuration = 3.0f; // Seconds to show win panel
-        [SerializeField] private float winPanelDelay = 0.8f; // Delay before panel pops up
+        [SerializeField] private float winDisplayDuration = 3.0f;
+        [SerializeField] private float winPanelDelay = 0.8f;
 
         private void Start()
         {
@@ -31,6 +37,11 @@ namespace SlotGame.View
                 payoutManager.OnWinDetected += ShowWinNotification;
                 payoutManager.OnBetChanged += UpdateBetUI;
             }
+
+            if (controller != null)
+            {
+                controller.OnSpinStarted += ClearWinText;
+            }
         }
 
         private void OnDisable()
@@ -41,13 +52,16 @@ namespace SlotGame.View
                 payoutManager.OnWinDetected -= ShowWinNotification;
                 payoutManager.OnBetChanged -= UpdateBetUI;
             }
+
+            if (controller != null)
+            {
+                controller.OnSpinStarted -= ClearWinText;
+            }
         }
 
         private void UpdateBalanceUI(int newBalance)
         {
             if (balanceText == null) return;
-            
-            // Format: 40,000 (just the number with commas)
             balanceText.text = newBalance.ToString("N0"); 
             balanceText.rectTransform.DOPunchScale(Vector3.one * 0.1f, 0.2f);
         }
@@ -55,27 +69,17 @@ namespace SlotGame.View
         private void UpdateBetUI(int newBet)
         {
             if (betText == null) return;
-            
-            // Format: 500 or 1,000
             betText.text = newBet.ToString("N0"); 
             betText.rectTransform.DOPunchScale(Vector3.one * 0.15f, 0.15f);
         }
 
-        public void OnIncreaseBetClicked()
-        {
-            if (payoutManager != null) payoutManager.IncreaseBet();
-        }
-
-        public void OnDecreaseBetClicked()
-        {
-            if (payoutManager != null) payoutManager.DecreaseBet();
-        }
+        public void OnIncreaseBetClicked() => payoutManager?.IncreaseBet();
+        public void OnDecreaseBetClicked() => payoutManager?.DecreaseBet();
 
         private void ShowWinNotification(int winAmount)
         {
             if (winAmountText == null) return;
 
-            // Wait for the delay (anticipation) before showing the panel
             DOVirtual.DelayedCall(winPanelDelay, () => {
                 
                 winAmountText.text = winAmount.ToString("N0");
@@ -89,15 +93,11 @@ namespace SlotGame.View
                     winNotificationPanel.transform.DOScale(Vector3.one, 0.5f).SetEase(Ease.OutBack);
                 }
 
-                // Auto-hide after it has been displayed for its full duration
                 DOVirtual.DelayedCall(winDisplayDuration, ClearWinText);
             });
         }
 
-        public void OnWinPanelClicked()
-        {
-            ClearWinText();
-        }
+        public void OnWinPanelClicked() => ClearWinText();
 
         public void ClearWinText()
         {

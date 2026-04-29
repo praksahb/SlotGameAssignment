@@ -4,8 +4,12 @@ using SlotGame.Data;
 
 namespace SlotGame.Core
 {
+    /// <summary>
+    /// Handles currency logic, bet tiers, and payout calculations.
+    /// </summary>
     public class PayoutManager : MonoBehaviour
     {
+        [Header("Settings")]
         [SerializeField] private SlotSettingsSO settings;
 
         public int CurrentBalance { get; private set; }
@@ -20,10 +24,7 @@ namespace SlotGame.Core
 
         private void Awake() 
         {
-            if (settings != null)
-            {
-                CurrentBalance = settings.initialBalance;
-            }
+            if (settings != null) CurrentBalance = settings.initialBalance;
             CurrentBet = betTiers[currentBetIndex];
         }
 
@@ -59,7 +60,7 @@ namespace SlotGame.Core
         {
             CurrentBalance -= CurrentBet;
             OnBalanceChanged?.Invoke(CurrentBalance);
-            Debug.Log($"Spin Cost Deducted. Balance: {CurrentBalance}");
+            Debug.Log($"[Economy] Spin cost deducted: {CurrentBet}. New Balance: {CurrentBalance}");
         }
 
         public int CalculatePotentialWin(List<SlotSymbolSO> results)
@@ -68,7 +69,6 @@ namespace SlotGame.Core
 
             if (results[0].symbolID == results[1].symbolID && results[1].symbolID == results[2].symbolID)
             {
-                // Win scales based on your bet!
                 int betMultiplier = CurrentBet / 10; 
                 int multiplier = settings != null ? settings.jackpotMultiplier : 10;
                 
@@ -81,8 +81,8 @@ namespace SlotGame.Core
         {
             CurrentBalance += amount;
             OnBalanceChanged?.Invoke(CurrentBalance);
-            OnWinDetected?.Invoke(amount); // Now it triggers at the RIGHT time!
-            Debug.Log($"<color=green>Credits Added: {amount}. New Balance: {CurrentBalance}</color>");
+            OnWinDetected?.Invoke(amount); 
+            Debug.Log($"[Economy] Credits added: {amount}. New Balance: {CurrentBalance}");
         }
     }
 }

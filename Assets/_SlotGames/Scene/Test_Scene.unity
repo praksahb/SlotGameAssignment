@@ -273,6 +273,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 683861fee24667140aee0b4cf8eec37d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  controller: {fileID: 1443624617}
   payoutManager: {fileID: 271928241}
   balanceText: {fileID: 1453204207}
   winAmountText: {fileID: 983462587}
@@ -2295,6 +2296,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1443624616}
   - component: {fileID: 1443624617}
+  - component: {fileID: 1443624618}
   m_Layer: 0
   m_Name: SlotMachineController
   m_TagString: Untagged
@@ -2336,9 +2338,25 @@ MonoBehaviour:
   database: {fileID: 11400000, guid: ae8daf4797c63484cbb326e9a9f0c625, type: 2}
   payoutManager: {fileID: 271928241}
   settings: {fileID: 11400000, guid: c9b79c6059e6ad64b874c4a22027a463, type: 2}
-  uiManager: {fileID: 270597725}
-  mainMachineObject: {fileID: 519779843}
   debugForceWin: 0
+--- !u!114 &1443624618
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1443624615}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bec18f615bac8aa47af197e7eff9a6f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  controller: {fileID: 1443624617}
+  payoutManager: {fileID: 271928241}
+  mainMachineObject: {fileID: 519779843}
+  startShakeDuration: 0.2
+  startShakeStrength: 8
+  winShakeStrength: 20
   winShakeDuration: 3.75
 --- !u!1 &1453204205
 GameObject:
