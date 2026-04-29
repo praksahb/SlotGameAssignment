@@ -41,9 +41,9 @@ The project follows a **decoupled component-based design**:
 
 ## 🌐 Instructions to Run WebGL Build
 
-1. Navigate to the `/Build/WebGL/` folder in this repository.
-2. Open the `index.html` file in a modern web browser (Chrome, Firefox, or Edge).
-3. **Note**: Most browsers require a local server to run WebGL (due to security policies). You can use a Unity local build, a VS Code extension like "Live Server," or Python's `http.server` to view it locally.
+1.  **Live Demo**: [Click Here to Play!]([LINK HERE])
+2.  **Manual Run**: Navigate to the `/docs/` folder in this repository.
+3.  **Local Server**: Open the `index.html` file using a local web server (e.g., VS Code "Live Server" extension) as browsers block `file://` URLs for WebGL.
 
 ## 🎁 Bonus Features
 
