@@ -1,43 +1,63 @@
-# 🎰 High-Fidelity Unity Slot Machine
+# 🎰 Unity Slot Game Assignment
 
-A professional, high-performance slot machine game built in Unity, featuring smooth mechanical reel physics, a modular event-driven architecture, and dynamic betting logic.
+A professionally architected, event-driven Slot Machine simulation built in Unity. This project demonstrates clean code principles, decoupled visual systems, and smooth, responsive gameplay.
 
 ## 📄 Overview
-This project implements a classic 3-reel slot machine with a focus on **Game Feel** and **Technical Scalability**. Instead of simple frame-swapping, the reels utilize a physical coordinate system and distance-based easing for a truly mechanical feel.
 
-## 🚀 How to Run
-1. **Clone the Repo**: `git clone <your-repo-link>`
-2. **Open in Unity**: Use Unity 2022.3 LTS or newer.
-3. **WebGL Build**: Navigate to the `/Builds/WebGL` folder and open the `index.html` (or run the project directly in the Editor).
+This project implement a 3-reel slot machine with a focus on **Game Feel (Juice)** and **Software Architecture**. It features a fully randomized RNG system, dynamic betting tiers, and a cinematic win sequence.
 
-## 🛠️ Technical Highlights
+## 🎮 Features
 
-### 1. The "Physical Reel" Engine
-Unlike traditional slot games that use simple "stop-on-frame" logic, this engine calculates a **dynamic stop distance**.
-*   **Seamless Transitions**: The stopping duration is calculated relative to current speed, ensuring the reel never "speeds up" to catch a target.
-*   **DOTween Integration**: Utilizes `Ease.OutCubic` for a smooth deceleration that perfectly mimics real-world friction.
-*   **Stable Wrapping**: A fixed-grid coordinate system ensures symbols wrap around the view perfectly without jitters or jerks.
+- **Event-Driven Architecture**: Core logic is decoupled from UI and Visual Effects using C# Actions.
+- **Dynamic Betting**: Tiered betting system (10, 50, 100, 200) with real-time balance updates.
+- **Cinematic Feedback**:
+  - Screen Shakes on spin and win.
+  - Symbol pulsing animations on win.
+  - Interactive win notifications with auto-hide and dismiss-on-click functionality.
+- **RNG Reliability**: Fair randomization using ScriptableObject-driven symbol databases.
+- **Debug Tools**: Built-in `Force Win` toggle for rapid testing of win conditions.
 
-### 2. Fair RNG System
-The game uses a **ScriptableObject-driven Database** and standard `Random.Range` to ensure completely unpredictable and fair outcomes for every spin.
-*   **Decoupled Logic**: The RNG result is determined *before* the reels stop, allowing the visual engine to "glide" precisely to the target.
+## 🏗️ Technical Architecture
 
-### 3. Modular Architecture (MVC-ish)
-The project is split into clean, logical layers:
-*   **Core**: `SlotMachineController` (The Brain), `PayoutManager` (The Accountant).
-*   **View**: `SlotReel` (Visual Motion), `UIManager` (HUD), `SlotLever` (Input Interaction).
-*   **Data**: `SlotDatabaseSO`, `SlotSettingsSO` (Configuration).
+The project follows a **decoupled component-based design**:
 
-## ✨ Bonus Features & "Juice"
-*   **Tactile Lever**: A fully animated 111-degree mechanical pull that stays down during the spin.
-*   **Dynamic Betting**: Seamlessly cycle through bet amounts (10, 50, 100, 200) with instant HUD updates.
-*   **Winner Highlight**: Winning symbols scale and "pulse" in gold to provide satisfying feedback.
-*   **Machine Shake**: The entire machine cabinet vibrates when a win is hit.
-*   **Responsive Scaling**: The reel layout automatically adjusts symbol sizing to fit the window while maintaining perfect vertical spacing.
+- **SlotMachineController**: The central engine. Handles the lifecycle of a spin but knows nothing about visuals.
+- **PayoutManager**: Handles the "Economy" and win calculations. Pure logic.
+- **SlotEffectManager**: Listens to engine events to trigger visual feedback (shakes, vibration).
+- **UIManager**: A standalone observer that updates the HUD based on economy events.
 
-## 🎨 Asset Credits
-*   UI & Symbols: Provided in the Assignment Asset Pack.
-*   Animations: Custom DOTween implementation.
+## 🛠️ Installation & Running
 
----
-*Built as part of the Unity Game Developer Assessment.*
+1. Clone this repository.
+2. Open the project in **Unity 6000.0.62f1 LTS**.
+3. Open the main scene located in `Assets/_SlotGames/Scenes/`.
+4. Press **Play**!
+
+### 🕹️ Controls
+
+- **Spin**: Click the "Spin" button, pull the animated Lever, or press **Spacebar**.
+- **Betting**: Use the **+** and **-** buttons to cycle through bet amounts.
+- **Debug**: Toggle `Debug Force Win` on the `SlotMachineController` to test win animations.
+
+## 🌐 Instructions to Run WebGL Build
+
+1. Navigate to the `/Build/WebGL/` folder in this repository.
+2. Open the `index.html` file in a modern web browser (Chrome, Firefox, or Edge).
+3. **Note**: Most browsers require a local server to run WebGL (due to security policies). You can use a Unity local build, a VS Code extension like "Live Server," or Python's `http.server` to view it locally.
+
+## 🎁 Bonus Features
+
+- **Physical Interaction**: A fully animated mechanical **Lever** that triggers spins with a natural 111-degree pull.
+- **Enhanced "Juice"**:
+  - High-intensity **Machine Shakes** during wins and mild vibrations on spin-up.
+  - **Pulsing Symbols**: Winning combinations physically pulse and glow to provide clear visual feedback.
+- **Developer Debug Tools**: A serialized `Debug Force Win` toggle to instantly test win sequences and payouts without waiting for RNG.
+
+## 🧠 Thought Process & Approach
+
+My approach was centered on creating a **Production-Ready** foundation rather than just a simple prototype.
+
+1. **Architecture (Decoupling)**: I implemented an **Event-Driven Design**. By using C# Actions, the core `SlotMachineController` remains ignorant of visual effects and UI. This ensures that if we wanted to change the UI or add a new Particle System, we wouldn't have to touch the game's core logic.
+2. **Data-Driven Design**: I used **ScriptableObjects** (`SlotDatabaseSO`, `SlotSymbolSO`) to manage game data. This allows for easy balancing of payouts and adding new symbols without touching a single line of code.
+3. **Game Feel (Juice)**: I prioritized "Tactile Feedback." Using **DOTween**, I added subtle bounces, shakes, and scale pulses. These micro-interactions are what separate a "basic" slot machine from a "premium" gaming experience.
+4. **RNG Fairness**: The randomization is handled independently per reel, ensuring that outcomes are statistically fair and unpredictable, mimicking real-world slot mechanics.
