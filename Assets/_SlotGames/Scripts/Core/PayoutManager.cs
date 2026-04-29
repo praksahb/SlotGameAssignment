@@ -68,13 +68,11 @@ namespace SlotGame.Core
 
             if (results[0].symbolID == results[1].symbolID && results[1].symbolID == results[2].symbolID)
             {
-                // Win scales based on your bet! (Divided by 10 so a 10 bet gives 1x base value)
+                // Win scales based on your bet!
                 int betMultiplier = CurrentBet / 10; 
                 int multiplier = settings != null ? settings.jackpotMultiplier : 10;
                 
-                int win = results[0].basePayoutValue * multiplier * betMultiplier;
-                OnWinDetected?.Invoke(win);
-                return win;
+                return results[0].basePayoutValue * multiplier * betMultiplier;
             }
             return 0;
         }
@@ -83,6 +81,7 @@ namespace SlotGame.Core
         {
             CurrentBalance += amount;
             OnBalanceChanged?.Invoke(CurrentBalance);
+            OnWinDetected?.Invoke(amount); // Now it triggers at the RIGHT time!
             Debug.Log($"<color=green>Credits Added: {amount}. New Balance: {CurrentBalance}</color>");
         }
     }

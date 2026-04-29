@@ -15,6 +15,8 @@ namespace SlotGame.View
         [SerializeField] private TextMeshProUGUI winAmountText;
         [SerializeField] private TextMeshProUGUI betText; // New text for current bet
         [SerializeField] private GameObject winNotificationPanel;
+        [SerializeField] private float winDisplayDuration = 3.0f; // Seconds to show win panel
+        [SerializeField] private float winPanelDelay = 0.8f; // Delay before panel pops up
 
         private void Start()
         {
@@ -45,7 +47,8 @@ namespace SlotGame.View
         {
             if (balanceText == null) return;
             
-            balanceText.text = newBalance.ToString(); // Numbers only
+            // Format: 40,000 (just the number with commas)
+            balanceText.text = newBalance.ToString("N0"); 
             balanceText.rectTransform.DOPunchScale(Vector3.one * 0.1f, 0.2f);
         }
 
@@ -53,7 +56,8 @@ namespace SlotGame.View
         {
             if (betText == null) return;
             
-            betText.text = newBet.ToString(); // Numbers only
+            // Format: 500 or 1,000
+            betText.text = newBet.ToString("N0"); 
             betText.rectTransform.DOPunchScale(Vector3.one * 0.15f, 0.15f);
         }
 
@@ -71,17 +75,28 @@ namespace SlotGame.View
         {
             if (winAmountText == null) return;
 
-            winAmountText.text = $"WIN: {winAmount}";
-            
-            winAmountText.rectTransform.localScale = Vector3.zero;
-            winAmountText.rectTransform.DOScale(Vector3.one, 0.5f).SetEase(Ease.OutBack);
-            
-            if (winNotificationPanel != null)
-            {
-                winNotificationPanel.SetActive(true);
-                winNotificationPanel.transform.localScale = Vector3.zero;
-                winNotificationPanel.transform.DOScale(Vector3.one, 0.5f).SetEase(Ease.OutBack);
-            }
+            // Wait for the delay (anticipation) before showing the panel
+            DOVirtual.DelayedCall(winPanelDelay, () => {
+                
+                winAmountText.text = winAmount.ToString("N0");
+                winAmountText.rectTransform.localScale = Vector3.zero;
+                winAmountText.rectTransform.DOScale(Vector3.one, 0.5f).SetEase(Ease.OutBack);
+                
+                if (winNotificationPanel != null)
+                {
+                    winNotificationPanel.SetActive(true);
+                    winNotificationPanel.transform.localScale = Vector3.zero;
+                    winNotificationPanel.transform.DOScale(Vector3.one, 0.5f).SetEase(Ease.OutBack);
+                }
+
+                // Auto-hide after it has been displayed for its full duration
+                DOVirtual.DelayedCall(winDisplayDuration, ClearWinText);
+            });
+        }
+
+        public void OnWinPanelClicked()
+        {
+            ClearWinText();
         }
 
         public void ClearWinText()

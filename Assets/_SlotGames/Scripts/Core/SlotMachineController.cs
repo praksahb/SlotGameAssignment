@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using SlotGame.Data;
 using SlotGame.View;
+using DG.Tweening;
 
 namespace SlotGame.Core
 {
@@ -14,6 +15,11 @@ namespace SlotGame.Core
         [SerializeField] private PayoutManager payoutManager;
         [SerializeField] private SlotSettingsSO settings;
         [SerializeField] private UIManager uiManager;
+        [SerializeField] private RectTransform mainMachineObject; // Drag your whole slot machine UI here!
+
+        [Header("Debug")]
+        [SerializeField] private bool debugForceWin = false;
+        [SerializeField] private float winShakeDuration = 1.5f;
 
         public System.Action OnSpinStarted;
         public System.Action OnSpinStopping;
@@ -23,6 +29,12 @@ namespace SlotGame.Core
         public void Spin()
         {
             if (isSpinning) return;
+
+            // Mild start-up shake for better feel!
+            if (mainMachineObject != null)
+            {
+                mainMachineObject.DOShakeAnchorPos(0.2f, 8f, 10);
+            }
 
             if (uiManager != null) uiManager.ClearWinText();
 
@@ -45,9 +57,23 @@ namespace SlotGame.Core
 
             // 1. Generate RNG Results
             List<SlotSymbolSO> results = new List<SlotSymbolSO>();
-            for (int i = 0; i < SlotReels.Length; i++)
+            
+            if (debugForceWin)
             {
-                results.Add(database.GetRandomSymbol());
+                // Pick one random symbol and force it for ALL reels
+                SlotSymbolSO forcedSymbol = database.GetRandomSymbol();
+                for (int i = 0; i < SlotReels.Length; i++)
+                {
+                    results.Add(forcedSymbol);
+                }
+            }
+            else
+            {
+                // Normal random results
+                for (int i = 0; i < SlotReels.Length; i++)
+                {
+                    results.Add(database.GetRandomSymbol());
+                }
             }
 
             // 2. Pre-calculate win
@@ -94,6 +120,19 @@ namespace SlotGame.Core
             {
                 payoutManager.AddWinToBalance(potentialWin);
                 Debug.Log($"<color=green>WINNER! You won {potentialWin} credits!</color>");
+
+                // Shake the whole machine!
+                if (mainMachineObject != null)
+                {
+                    mainMachineObject.DOShakeAnchorPos(winShakeDuration, 20f, 15);
+                }
+
+                // Play animations on winning symbols
+                foreach (var reel in SlotReels)
+                {
+                    SymbolView winSymbol = reel.GetCenterSymbolView();
+                    if (winSymbol != null) winSymbol.PlayWinAnimation();
+                }
             }
 
             isSpinning = false;

@@ -278,6 +278,8 @@ MonoBehaviour:
   winAmountText: {fileID: 983462587}
   betText: {fileID: 679296859}
   winNotificationPanel: {fileID: 1820768289}
+  winDisplayDuration: 3
+  winPanelDelay: 0.75
 --- !u!1 &271928239
 GameObject:
   m_ObjectHideFlags: 0
@@ -2335,6 +2337,9 @@ MonoBehaviour:
   payoutManager: {fileID: 271928241}
   settings: {fileID: 11400000, guid: c9b79c6059e6ad64b874c4a22027a463, type: 2}
   uiManager: {fileID: 270597725}
+  mainMachineObject: {fileID: 519779843}
+  debugForceWin: 0
+  winShakeDuration: 3.75
 --- !u!1 &1453204205
 GameObject:
   m_ObjectHideFlags: 0
@@ -2392,7 +2397,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Rs. 40,000
+  m_text: 40,000
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

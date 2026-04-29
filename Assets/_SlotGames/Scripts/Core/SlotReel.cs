@@ -167,6 +167,22 @@ namespace SlotGame.Core
             }
         }
 
+        public SymbolView GetCenterSymbolView()
+        {
+            float visualCenter = windowViewReference != null ? windowViewReference.anchoredPosition.y : 0;
+            float targetY = visualCenter + centeringOffset;
+
+            foreach (var rect in activeSymbols)
+            {
+                // If it's within a tiny threshold of the center target, it's the winner
+                if (Mathf.Abs(rect.anchoredPosition.y - targetY) < 1.0f)
+                {
+                    return rect.GetComponent<SymbolView>();
+                }
+            }
+            return null;
+        }
+
         private float GetHighestSymbolY()
         {
             float max = -float.MaxValue;
