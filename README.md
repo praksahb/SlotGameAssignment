@@ -41,7 +41,7 @@ The project follows a **decoupled component-based design**:
 
 ## 🌐 Instructions to Run WebGL Build
 
-1.  **Live Demo**: [Click Here to Play!]([LINK HERE])
+1.  **Live Demo**: [Click Here to Play!](https://praksahb.github.io/SlotGameAssignment/)
 2.  **Manual Run**: Navigate to the `/docs/` folder in this repository.
 3.  **Local Server**: Open the `index.html` file using a local web server (e.g., VS Code "Live Server" extension) as browsers block `file://` URLs for WebGL.
 
