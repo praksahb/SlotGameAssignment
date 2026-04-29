@@ -9,11 +9,13 @@ namespace SlotGame.View
         [SerializeField] private Image symbolImage;
 
         public int CurrentID { get; private set; }
+        public SlotSymbolSO CurrentSymbol { get; private set; }
 
         public void UpdateSymbol(SlotSymbolSO data)
         {
             if (data == null) return;
 
+            CurrentSymbol = data;
             CurrentID = data.symbolID;
             symbolImage.sprite = data.symbolSprite;
         }
